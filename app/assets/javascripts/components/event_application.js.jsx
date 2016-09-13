@@ -37,6 +37,11 @@ var EventApplication = React.createClass({
 
 var EventTable = React.createClass({
   render: function() {
+    var events = [];
+    this.props.events.forEach(function(event) {
+      events.push(<Event event={event}
+                         key={'event' + event.id}/>);
+    }.bind(this));
     return (
       <table className="table table-striped">
         <thead>
@@ -48,7 +53,7 @@ var EventTable = React.createClass({
           </tr>
         </thead>
         <tbody>
-          <Event name="new_event" />
+          {events}
         </tbody>
       </table>
     )
@@ -57,10 +62,10 @@ var EventTable = React.createClass({
 
 var Event = React.createClass({
   propTypes:{
-    name: React.propTypes.string,
-    event_date: React.propTypes.string,
-    place: React.propTypes.string,
-    description: React.propTypes.string,
+    name: React.PropTypes.string,
+    event_date: React.PropTypes.string,
+    place: React.PropTypes.string,
+    description: React.PropTypes.string,
   },
   render: function() {
     var event = this.props.event;
