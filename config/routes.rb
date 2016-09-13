@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   root 'dashboard#index'
 
   namespace :api do
-    resources :events
+    resources :events, only:[:index, :create] do 
+      get :search, on: :collection
+    end
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

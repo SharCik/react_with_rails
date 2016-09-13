@@ -17,12 +17,20 @@ var EventApplication = React.createClass({
       }
     })
   },
+  handleSearch: function(events) {
+    this.setState({ events: events });
+  },
   render: function() {
     return (
       <div className="container">
         <div className="jumbotron">
           <h1>Tutorial</h1>
           <p>Stas Zelenko</p>
+        </div>
+        <div className="row">
+          <div className="col-md-4">
+            <SearchForm handleSearch={this.handleSearch} />
+          </div>
         </div>
         <div className="row">
           <div className="col-md-12">
@@ -76,6 +84,32 @@ var Event = React.createClass({
         <td>{event.place}</td>
         <td>{event.description}</td>
       </tr>
+    )
+  }
+});
+
+var SearchForm = React.createClass({
+  eventsSearchForm: function() {
+    var query = ReactDOM.findDOMNode(this.refs.query).value;
+    var self = this;
+    $.ajax({
+      url: 'api/events/search',
+      data: {query: query},
+      success: function(data) {
+        self.props.handleSearch(data);
+      },
+      error: function(xhr, status, error) {
+        alert('search error: ', status, xhr, error);
+      }
+    });
+  },
+  render: function() {
+    return(
+      <input onChange = {this.eventsSearchForm}
+             type = "text"
+             className = "form-control"
+             placeholder = "Type search phrase here..."
+             ref = "query" />
     )
   }
 });
