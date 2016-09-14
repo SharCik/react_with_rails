@@ -20,6 +20,18 @@ module Api
       render json: events
     end
 
+  def destroy
+
+    event = Event.find(params[:event])
+    if event.destroy
+      events = Event.all
+      render json: events
+    else
+      render nothing: true, status: :bad_request
+    end
+
+  end
+
     private
 
     def event_params

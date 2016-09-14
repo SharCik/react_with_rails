@@ -17,13 +17,16 @@ var EventApplication = React.createClass({
       }
     })
   },
-  handleSearch: function(events) {
+  _handleSearch: function(events) {
     this.setState({ events: events });
   },
   handleAdd: function (event){
     var events = this.state.events;
     events.push(event);
     this.setState({ events: events});
+  },
+  _removeEvent: function(events) {
+    this.setState({ events: events }); 
   },
   render: function() {
     return (
@@ -34,7 +37,7 @@ var EventApplication = React.createClass({
         </div>
         <div className="row">
           <div className="col-md-2">
-            <SearchForm handleSearch={this.handleSearch} />
+            <SearchForm handleSearch={this._handleSearch} />
           </div>
           <div className="col-md-10">
             <NewForm handleAdd={this.handleAdd} />
@@ -42,7 +45,7 @@ var EventApplication = React.createClass({
         </div>
         <div className="row">
           <div className="col-md-12">
-            <EventTable events={this.state.events}/>
+            <EventTable events={this.state.events} removeEvent={this._removeEvent}/>
           </div>
         </div>
       </div>
@@ -55,7 +58,7 @@ var EventTable = React.createClass({
   render: function() {
     var events = [];
     this.props.events.forEach(function(event) {
-      events.push(<Event event={event}
+      events.push(<Event event={event} removeEvent={this.props.removeEvent}
                          key={'event' + event.id}/>);
     }.bind(this));
     return (
@@ -65,7 +68,8 @@ var EventTable = React.createClass({
             <th className="col-md-3">Name</th>
             <th className="col-md-2">Date</th>
             <th className="col-md-3">Place</th>
-            <th className="col-md-4">Description</th>
+            <th className="col-md-3">Description</th>
+            <th className="col-md-1"></th>
           </tr>
         </thead>
         <tbody>
@@ -83,6 +87,21 @@ var Event = React.createClass({
     place: React.PropTypes.string,
     description: React.PropTypes.string,
   },
+  deleteEvent: function(event_id) {
+    var event_id = event_id;
+        self = this;
+    $.ajax({
+        method: 'DELETE',
+        url: "api/events/"+ event_id,
+        data: { event: event_id },
+      success: function(data) {
+        self.props.removeEvent(data);
+      },
+      error: function(xhr,status,error){
+        
+      }
+    })
+  },
   render: function() {
     var event = this.props.event;
     return(
@@ -91,6 +110,11 @@ var Event = React.createClass({
         <td>{event.event_date}</td>
         <td>{event.place}</td>
         <td>{event.description}</td>
+        <td><button className="btn btn-danger"
+                    onClick = {() => { this.deleteEvent(event.id)}}>
+                    Remove
+                    </button>
+        </td>
       </tr>
     )
   }
